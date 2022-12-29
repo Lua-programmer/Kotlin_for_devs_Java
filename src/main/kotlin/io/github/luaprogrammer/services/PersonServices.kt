@@ -1,5 +1,6 @@
 package io.github.luaprogrammer.services
 
+import io.github.luaprogrammer.exception.RequiredObjectIsNullException
 import io.github.luaprogrammer.exception.ResourceNotFoundException
 import io.github.luaprogrammer.model.Person
 import io.github.luaprogrammer.repository.PersonRepository
@@ -11,7 +12,10 @@ class PersonServices {
     @Autowired
     private lateinit var repository: PersonRepository
 
-    fun create(person: Person): Person = repository.save(person)
+    fun create(person: Person?): Person {
+        if (person == null) throw RequiredObjectIsNullException()
+        return repository.save(person)
+    }
 
     fun findAll(): List<Person> = repository.findAll()
 
@@ -26,7 +30,8 @@ class PersonServices {
     }
 
 
-    fun update(person: Person): Person {
+    fun update(person: Person?): Person {
+        if (person == null) throw RequiredObjectIsNullException()
         val entity: Person = repository.findById(person.id!!)
             .orElseThrow { ResourceNotFoundException("No records found for this ID") }
         entity.firstName = person.firstName
